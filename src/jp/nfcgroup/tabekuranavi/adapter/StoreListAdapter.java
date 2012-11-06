@@ -1,17 +1,18 @@
 package jp.nfcgroup.tabekuranavi.adapter;
 
-import java.util.List;
-import java.util.Map;
-
-import jp.nfcgroup.tabekuranavi.R;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+
+import java.util.List;
+import java.util.Map;
+import jp.nfcgroup.tabekuranavi.R;
 
 public class StoreListAdapter extends SimpleExpandableListAdapter {
 
@@ -42,6 +43,12 @@ public class StoreListAdapter extends SimpleExpandableListAdapter {
         TextView titleView = (TextView) convertView.findViewById(R.id.shop_title);
         titleView.setText(vo.get("name"));
         
+        if(isExpanded){
+            convertView.setBackgroundColor(Color.parseColor("#ffe69a"));
+        }else{
+            convertView.setBackgroundColor(Color.parseColor("#fff3cf"));
+        }
+        
         return convertView;
     }
     
@@ -62,21 +69,5 @@ public class StoreListAdapter extends SimpleExpandableListAdapter {
         priceView.setText(vo.get("price")+" rokka");
         
         return convertView;
-    }
-    
-    @Override
-    public void onGroupCollapsed(int groupPosition) {
-        super.onGroupCollapsed(groupPosition);
-        Log.d(TAG,"onGroupCollapsed");
-        View v = getGroupView(groupPosition, false, null, null);
-        v.setBackgroundColor(Color.parseColor("#ffe69a"));
-    }
-    
-    @Override
-    public void onGroupExpanded(int groupPosition) {
-        super.onGroupExpanded(groupPosition);
-        Log.d(TAG,"onGroupExpanded");
-        View v = getGroupView(groupPosition, true, null, null);
-        v.setBackgroundColor(Color.parseColor("#835a1b"));
     }
 }

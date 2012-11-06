@@ -1,5 +1,13 @@
 package jp.nfcgroup.tabekuranavi.fragment;
 
+import android.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,17 +15,9 @@ import java.util.Map;
 
 import jp.nfcgroup.tabekuranavi.R;
 import jp.nfcgroup.tabekuranavi.adapter.StoreListAdapter;
-import jp.nfcgroup.tabekuranavi.model.StoreFinder;
 import jp.nfcgroup.tabekuranavi.model.TestModel;
 import jp.nfcgroup.tabekuranavi.model.vo.DishVO;
 import jp.nfcgroup.tabekuranavi.model.vo.StoreVO;
-import android.app.Fragment;
-import android.os.Bundle;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 
 public class ListFragment extends Fragment {
     
@@ -35,27 +35,19 @@ public class ListFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        //ArrayList<StoreVO> stores = TestModel.getTestStores();
-        StoreFinder finder = new StoreFinder();
-        SparseArray<StoreVO> stores = finder.getStores();
+        ArrayList<StoreVO> stores = TestModel.getTestStores();
         
         List<Map<String,Object>> parents = new ArrayList<Map<String,Object>>();
         List<List<Map<String,Object>>> children = new ArrayList<List<Map<String,Object>>>();
         
-        //for(StoreVO store:stores){
-        for(int i = 0; i < stores.size(); i++) {
-            //e—v‘f
+        for(StoreVO store:stores){
             Map<String,Object> parent = new HashMap<String,Object>();
-            //parent.put("name",store.name);
-            //parent.put("weight", String.valueOf(store.weight));
-            parent.put("name",stores.get(i).name);
-            parent.put("weight", String.valueOf(stores.get(i).weight));
+            parent.put("name",store.name);
+            parent.put("weight", String.valueOf(store.weight));
             parents.add(parent);
             
-            //Žq—v‘f
             List<Map<String,Object>> child = new ArrayList<Map<String,Object>>();
-            //for(DishVO dish:store.dishes){
-            for(DishVO dish:stores.get(i).dishes){
+            for(DishVO dish:store.dishes){
                 Map<String,Object> childEntity = new HashMap<String,Object>();
                 childEntity.put("name", dish.name);
                 childEntity.put("price", String.valueOf(dish.price));
@@ -77,6 +69,7 @@ public class ListFragment extends Fragment {
         
         listView = (ExpandableListView) getActivity().findViewById(R.id.listView);
         listView.setAdapter(adapter);
+        listView.setGroupIndicator(null);
     }
     
 }

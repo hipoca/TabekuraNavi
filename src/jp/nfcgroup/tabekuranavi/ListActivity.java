@@ -1,9 +1,5 @@
 package jp.nfcgroup.tabekuranavi;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-
-import jp.nfcgroup.tabekuranavi.util.NfcUtil;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
@@ -17,6 +13,11 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
+import jp.nfcgroup.tabekuranavi.util.NfcUtil;
 
 public class ListActivity extends BaseActivity {
     
@@ -42,13 +43,11 @@ public class ListActivity extends BaseActivity {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (mNfcAdapter == null) {
-            // NFC非搭載端末
             finish();
             return;
         }
 
         if (!mNfcAdapter.isEnabled()) {
-            // NFC機能オフなので設定画面へ遷移
             Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
             startActivity(intent);
             return;
@@ -96,11 +95,6 @@ public class ListActivity extends BaseActivity {
         mNfcAdapter.disableForegroundDispatch(this);
     }
     
-    /**
-     * タグ認識イベントリスナー
-     * データ形式の分岐処理もここで処理する
-     * @param intent
-     */
     protected void onDiscoverd(Intent intent){
         Parcelable[] parcelables = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
         NdefMessage message = (NdefMessage) parcelables[0];
@@ -115,32 +109,24 @@ public class ListActivity extends BaseActivity {
                     onUpdateModel();
                     
                 }catch(UnsupportedEncodingException e){
-                    //showError("タグの情報が不正です\n"+e.getMessage());
+                    //showError("荳肴ｭ｣縺ｪ繧ｿ繧ｰ諠�蝣ｱ縺ｧ縺兔n"+e.getMessage());
                 }
             }
         }
     }
     
     protected void onUpdateTags(String text) {
-        //TODO キーワードの保存
+        //TODO
     }
-
-    /**
-     * モデル更新
-     * @param tag
-     */
+    
     protected void onUpdateModel(){
         
-        //TODO キーワードの取得
-        //TODO DBからの取得?
+        //TODO
+        //TODO
         
         onUpdateViews();
     }
     
-    /**
-     * 画面更新
-     * サブクラスで実装する
-     */
     protected void onUpdateViews(){
         FragmentManager manager = getFragmentManager();
         Fragment list =  manager.findFragmentById(R.id.fragment_list);

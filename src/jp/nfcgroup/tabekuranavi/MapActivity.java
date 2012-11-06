@@ -11,7 +11,6 @@ public class MapActivity extends BaseActivity implements OnClickListener{
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO 自動生成されたメソッド・スタブ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         
@@ -21,17 +20,15 @@ public class MapActivity extends BaseActivity implements OnClickListener{
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // TODO 自動生成されたメソッド・スタブ
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.button1:
-                Intent intent = new Intent(this.getApplicationContext(),ListActivity.class);
-                startActivity(intent);
-                break;
-        }
-    }
-    
+   public void onClick(View v) {
+       switch(v.getId()){
+           case R.id.button1:
+               Intent intent = new Intent(this.getApplicationContext(),ListActivity.class);
+               startActivity(intent);
+               break;
+       }
+   }
 }
