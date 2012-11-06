@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="32dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dp"
     android:orientation="horizontal"
@@ -13,13 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
     	android:layout_gravity="center_vertical"
+    	android:layout_marginLeft="32dp"
         android:src="@drawable/ic_arrow" />
 
     <TextView
         android:id="@+id/dish_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="48dp"
     	android:layout_gravity="center"
     	android:textColor="#835a1b"
         android:text="TextView" />
