@@ -74,4 +74,10 @@ public class ListFragment extends Fragment {
         listView.setDividerHeight(0);
     }
     
+    public void updateViews(){
+        //TODO Modelデータ引き受け
+        
+        //
+    }
+    
 }

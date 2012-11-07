@@ -17,6 +17,7 @@ import android.view.Menu;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
+import jp.nfcgroup.tabekuranavi.fragment.ListFragment;
 import jp.nfcgroup.tabekuranavi.util.NfcUtil;
 
 public class ListActivity extends BaseActivity {
@@ -129,7 +130,8 @@ public class ListActivity extends BaseActivity {
     
     protected void onUpdateViews(){
         FragmentManager manager = getFragmentManager();
-        Fragment list =  manager.findFragmentById(R.id.fragment_list);
-        Log.d(TAG,(list != null)?"exist":"null");
+        ListFragment list =  (ListFragment) manager.findFragmentById(R.id.fragment_list);
+        
+        list.updateViews();
     }
 }
