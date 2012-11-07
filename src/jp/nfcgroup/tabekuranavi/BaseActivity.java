@@ -11,23 +11,33 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import jp.nfcgroup.tabekuranavi.model.StoreFinder;
+import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 import jp.nfcgroup.tabekuranavi.util.NfcUtil;
+import jp.nfcgroup.tabekuranavi.view.KeywordHodler;
+import jp.nfcgroup.tabekuranavi.view.KeywordHodler.KeywordChangedListener;
 
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity implements KeywordChangedListener {
     
     protected NfcAdapter mNfcAdapter;
     protected StoreFinder mStoreFinder;
+    protected KeywordHodler mKeywordHolder;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         mStoreFinder = new StoreFinder(getApplicationContext());
+        
+        mKeywordHolder = new KeywordHodler(getApplicationContext(),this);
     }
     
     @Override
@@ -119,4 +129,10 @@ public abstract class BaseActivity extends Activity {
     }
 
     abstract protected void onUpdateViews();
+    
+    
+    public void onKeywordChangedListener(int id) {
+        // TODO 自動生成されたメソッド・スタブ
+        
+    }
 }
