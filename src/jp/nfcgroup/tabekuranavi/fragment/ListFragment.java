@@ -42,7 +42,7 @@ public class ListFragment extends Fragment {
         
         for(StoreVO store:stores){
             Map<String, Object> parent = new HashMap<String,Object>();
-            parent.put("id",String.valueOf(store.storeId));
+            parent.put("id",String.valueOf(store.id));
             parent.put("name",store.name);
             parent.put("weight", String.valueOf(store.weight));
             parents.add(parent);

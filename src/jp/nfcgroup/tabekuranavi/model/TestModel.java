@@ -16,7 +16,7 @@ public class TestModel {
         
         for(int i=0;i<shopNames.length;i++){
             StoreVO store = new StoreVO();
-            store.storeId = i+1;
+            store.id = i+1;
             store.name = shopNames[i];
             store.weight = shopWeights[i];
             
