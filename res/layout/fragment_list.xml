@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF" >
+    android:background="#fff3cf" >
 	<FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,10 +33,11 @@
         android:background="@drawable/bg_tag_holder"
          >
 
-        <HorizontalScrollView
+        <jp.nfcgroup.tabekuranavi.view.CustomScrollView
             android:id="@+id/horizontalScrollView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:overScrollMode="always">
 
             <LinearLayout
                 android:id="@+id/tag_holder"
@@ -46,7 +47,7 @@
                 android:orientation="horizontal" >
                 
             </LinearLayout>
-        </HorizontalScrollView>
+        </jp.nfcgroup.tabekuranavi.view.CustomScrollView>
 
     </FrameLayout>
     
