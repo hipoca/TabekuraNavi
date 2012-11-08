@@ -15,8 +15,8 @@ import jp.nfcgroup.tabekuranavi.view.KeywordHodler;
 
 public class ListActivity extends BaseActivity implements OnClickListener {
     
+    @SuppressWarnings("unused")
     private static final String TAG = "ListActivity";
-    
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {

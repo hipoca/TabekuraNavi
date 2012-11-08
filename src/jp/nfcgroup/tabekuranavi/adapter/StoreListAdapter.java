@@ -1,8 +1,6 @@
 package jp.nfcgroup.tabekuranavi.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,6 +69,7 @@ public class StoreListAdapter extends SimpleExpandableListAdapter {
             convertView = inflater.inflate(R.layout.row_group,null);
         }
         
+        @SuppressWarnings("unchecked")
         Map<String,Object> vo = (Map<String, Object>) getGroup(groupPosition);
         
         TextView titleView = (TextView) convertView.findViewById(R.id.shop_title);
@@ -105,6 +104,7 @@ public class StoreListAdapter extends SimpleExpandableListAdapter {
             convertView = inflater.inflate(R.layout.row_child,null);
         }
         
+        @SuppressWarnings("unchecked")
         Map<String,String> vo = (Map<String, String>) getChild(groupPosition, childPosition);
         
         TextView titleView = (TextView) convertView.findViewById(R.id.dish_title);
