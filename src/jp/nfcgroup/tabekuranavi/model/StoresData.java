@@ -7,8 +7,10 @@ import jp.nfcgroup.tabekuranavi.model.vo.DishVO;
 import jp.nfcgroup.tabekuranavi.model.vo.StoreVO;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 public class StoresData {
+	private static final String TAG = StoresData.class.getSimpleName();
 
 	private static StoresData mStoresData = new StoresData();
 	private static boolean mInitFlag = false;
@@ -32,7 +34,19 @@ public class StoresData {
 	 * @return
 	 */
 	public ArrayList<StoreVO> getAllStore(Context context) {
+		Log.d(TAG, "store list size -> "+mStores.size());
 		if(!mInitFlag) initialize(context);
+		
+		//for debug
+		Log.w(TAG, "VVVVVVV for debug VVVVVVVV");
+		int size = mStores.size();
+		for(int i = 0; i < size; i++) {
+			StoreVO vo = mStores.get(i);
+			Log.i(TAG, String.format("i:%d id:%d name:%s sub:%s weight:%d",
+					i, vo.id, vo.name, vo.subTitle, vo.weight));
+		}
+		//for debug
+		
 		return mStores;
 	}
 	
@@ -51,34 +65,47 @@ public class StoresData {
 		
 		// 店舗情報を初期化
 		mStores.clear();
+		svo.id = 0;
 		
 		if(c.moveToFirst()) {
 			do {
 				// 店舗IDを取得
-				storeId = c.getInt(c.getColumnIndex("dish_shop_id"));
+				storeId = c.getInt(c.getColumnIndex("shop_id"));
 				
 				// 店舗情報を作成
 				if(svo.id != storeId) {
 					if(!c.isFirst()) {
 						mStores.add(svo);
+						svo = new StoreVO();
 					}
 					svo.id = storeId;
 					svo.name = c.getString(c.getColumnIndex("shop_name"));
-					svo.subTitle = c.getString(c.getColumnIndex("shop_subtitle"));
+					String str = c.getString(c.getColumnIndex("shop_subtitle"));
+					svo.subTitle = (str != null) ? str : " ";
 					svo.weight = 0;
+					Log.i(TAG, String.format("id:%d name:%s sub:%s weight:%d",
+							svo.id, svo.name, svo.subTitle, svo.weight));
 					
 					svo.dishes.clear();
 					dvo.id = c.getInt(c.getColumnIndex("dish_id"));
 					dvo.name = c.getString(c.getColumnIndex("dish_name"));
 					dvo.priceTo = c.getInt(c.getColumnIndex("dish_price_to"));
 					dvo.priceFrom = c.getInt(c.getColumnIndex("dish_price_from"));
+					dvo.price = dvo.priceFrom;
 					svo.dishes.add(dvo);
+					dvo = new DishVO();
 				} else {
 					dvo.id = c.getInt(c.getColumnIndex("dish_id"));
 					dvo.name = c.getString(c.getColumnIndex("dish_name"));
 					dvo.priceTo = c.getInt(c.getColumnIndex("dish_price_to"));
 					dvo.priceFrom = c.getInt(c.getColumnIndex("dish_price_from"));
+					dvo.price = dvo.priceFrom;
 					svo.dishes.add(dvo);
+					dvo = new DishVO();
+				}
+				
+				if(c.isLast()) {
+					mStores.add(svo);
 				}
 			} while(c.moveToNext());
 			

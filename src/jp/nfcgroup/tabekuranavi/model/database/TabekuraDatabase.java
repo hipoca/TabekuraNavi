@@ -6,9 +6,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 
 public class TabekuraDatabase {
+	@SuppressWarnings("unused")
+	private static final String TAG = TabekuraDatabase.class.getSimpleName();
 	
 	private final Context mContext;
 	private DatabaseHelper mDbHelper;
@@ -20,13 +23,13 @@ public class TabekuraDatabase {
 			"select * from category " +
 			"inner join dish on category_dish_id=dish_id " +
 			// WHERE句は動的に生成
-			"where %s " +
+			" %s " +
 			"order by dish_shop_id, category_dish_id";
 	// タグIDで該当するタグを検索する
 	private static final String SQL_STRING_FIND_TAG =
 			"select * from tag " +
 			// WHERE句は動的に生成
-			"where %s ";
+			" %s ";
 	// 全店舗の詳細情報を取得する
 	private static final String SQL_STRING_ALL_STORES =
 			"select * from shop inner join dish on shop_id=dish_shop_id";
@@ -57,7 +60,7 @@ public class TabekuraDatabase {
 		int size = tagId.length;
 		for(int i = 0; i < size; i++) {
 			if(i == 0) {
-				tagCondition = "category_tag_id=" + tagId[0];
+				tagCondition = "where category_tag_id=" + tagId[0];
 			} else {
 				if(flag) {
 					tagCondition += " AND category_tag_id=" + tagId[i];
@@ -68,6 +71,7 @@ public class TabekuraDatabase {
 		}
 		// SQL文を作成
 		String sqlstr = String.format(SQL_STRING_FIND_STORES, tagCondition);
+		Log.w(TAG, "SQL:"+sqlstr);
 		Cursor cursor = mDb.rawQuery(sqlstr, null);
 		return cursor;
 	}
@@ -91,7 +95,7 @@ public class TabekuraDatabase {
 	 */
 	public Cursor findTag(int tagId) {
 		// SQL文を作成
-		String sqlstr = String.format(SQL_STRING_FIND_TAG, "tag_id=" + tagId);
+		String sqlstr = String.format(SQL_STRING_FIND_TAG, "where tag_id=" + tagId);
 		return mDb.rawQuery(sqlstr, null);
 	}
 	

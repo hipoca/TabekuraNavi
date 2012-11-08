@@ -10,7 +10,6 @@ public class KeywordData {
 	private ArrayList<TagVO> _keywords;
 	
 	private KeywordData() {
-		super();
 		_keywords = new ArrayList<TagVO>();
 	}
 	

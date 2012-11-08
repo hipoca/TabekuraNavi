@@ -7,9 +7,11 @@ import jp.nfcgroup.tabekuranavi.model.vo.StoreVO;
 import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.util.SparseArray;
 
 public class StoreFinder {
+	private static final String TAG = StoreFinder.class.getSimpleName();
 	
 	private Context mContext;
 	private KeywordData mKeyword;
@@ -70,15 +72,36 @@ public class StoreFinder {
 		int sid = 0;
 		int dishId = 0;
 		int did = 0;
-		int storeWeight = 0;
-		int weightCounter = 0;
+		int storeWeight = 1;
+		int weightCounter = 1;
 		
 		// タグIDを取得
 		ArrayList<TagVO> tags = mKeyword.getKeywords();
+		//for debug
 		int size = tags.size();
 		int[] tagIds = new int[size];
+		//test data
+		//int size = 1;
+		//int[] tagIds = new int[1];
+		//tagIds[0] = 15;
+		//test data
 		for(int i = 0; i < size; i++) {
 			tagIds[i] = tags.get(i).id;
+		}
+		//for debug
+		
+		// 店舗情報を初期化
+		mStores.clear();
+
+		// 全店舗の初期情報を取得
+		StoresData sdat = StoresData.getInstance();
+		ArrayList<StoreVO> storeList = sdat.getAllStore(mContext);
+		int listSize = storeList.size();
+		Log.d(TAG, "listSize="+listSize);
+		
+		if(size == 0) {
+			// 検索キーワード無しなので、全店舗返す
+			return storeList;
 		}
 		
 		// データベースから該当店舗を取得
@@ -92,6 +115,7 @@ public class StoreFinder {
 				// 店舗情報をデータベースから取得
 				sid = cursor.getInt(cursor.getColumnIndex("dish_shop_id"));
 				did = cursor.getInt(cursor.getColumnIndex("dish_id"));
+				//Log.i(TAG, "shop_id:"+sid+" dish_id:"+did);
 				if(storeId == sid) {
 					// 重みの計測
 					if(dishId == did) {
@@ -103,10 +127,13 @@ public class StoreFinder {
 						weightCounter = 1;
 					}
 				} else {
-					// 店舗IDと重みを記録	
-					mStoresInfo.put(storeId, storeWeight);
-					// 重みを初期化
-					storeWeight = 1;
+					if(!cursor.isFirst()) {
+						// 店舗IDと重みを記録	
+						mStoresInfo.put(storeId, storeWeight);
+						//Log.i(TAG, "store info put : id="+storeId+" weight="+storeWeight);
+						// 重みを初期化
+						storeWeight = 1;
+					}
 				}
 				
 				// 商品IDを退避
@@ -118,20 +145,13 @@ public class StoreFinder {
 		}
 		cursor.close();
 		
-		// 店舗情報を初期化
-		mStores.clear();
-		// 全店舗の初期情報を取得
-		StoresData sdat = StoresData.getInstance();
-		ArrayList<StoreVO> storelist = sdat.getAllStore(mContext);
-		int listSize = storelist.size();
-		
 		// タグに該当する店舗のみ戻り値に登録
 		for(int i = 0; i < listSize; i++) {
-			int id = storelist.get(i).id;
+			int id = storeList.get(i).id;
 			if(mStoresInfo.get(id) != null) {
 				// さっき計測した重みをセット
-				storelist.get(i).weight = mStoresInfo.get(id);
-				mStores.add(storelist.get(i));
+				storeList.get(i).weight = mStoresInfo.get(id);
+				mStores.add(storeList.get(i));
 			}
 		}
 		
