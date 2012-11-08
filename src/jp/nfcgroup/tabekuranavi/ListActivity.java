@@ -23,12 +23,12 @@ public class ListActivity extends BaseActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         
-        
+        mKeywordHolder = new KeywordHodler(getApplicationContext(),(LinearLayout) findViewById(R.id.tag_holder),this);
         for(int i=0;i<10;i++){
             TagVO tag = new TagVO();
             tag.id = i+1;
             tag.name = "ジャマイカ";
-            mKeywordHolder.addKeyword(tag,(LinearLayout) findViewById(R.id.tag_holder));
+            mKeywordHolder.addKeyword(tag);
         }
         
         ImageButton btn = (ImageButton) findViewById(R.id.change_view_button);

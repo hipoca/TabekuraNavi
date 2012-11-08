@@ -15,13 +15,15 @@ public class KeywordHodler implements OnClickListener {
     
     private Context mContext;
     private KeywordChangedListener mListener;
+    private LinearLayout mHolder;
     
-    public KeywordHodler(Context context, KeywordChangedListener listener) {
+    public KeywordHodler(Context context, LinearLayout holder, KeywordChangedListener listener) {
         mContext = context;
+        mHolder = holder;
         mListener = listener;
     }
     
-    public void addKeyword(TagVO tag, LinearLayout parent){
+    public void addKeyword(TagVO tag){
         if(tag == null) return;
         
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -35,19 +37,18 @@ public class KeywordHodler implements OnClickListener {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(5, 0, 5, 0);
         convertView.setLayoutParams(params);
-        parent.addView(convertView);
+        mHolder.addView(convertView);
     }
 
     public void onClick(View view) {
         int tagId = (Integer) view.getTag();
-        //remove
-        ViewGroup group = (ViewGroup) view.getParent();
-        for(int i=0,max=group.getChildCount();i<max;i++){
-            View v = group.getChildAt(i);
+        
+        for(int i=0,max=mHolder.getChildCount();i<max;i++){
+            View v = mHolder.getChildAt(i);
             int id = (Integer) v.getTag();
             
             if(id == tagId){
-                group.removeView(v);
+                mHolder.removeView(v);
                 return;
             }
         }

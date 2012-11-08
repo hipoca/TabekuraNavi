@@ -36,8 +36,6 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
         super.onCreate(savedInstanceState);
         
         mStoreFinder = new StoreFinder(getApplicationContext());
-        
-        mKeywordHolder = new KeywordHodler(getApplicationContext(),this);
     }
     
     @Override
