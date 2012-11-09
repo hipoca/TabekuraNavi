@@ -60,7 +60,17 @@ public class StoreFinder {
 	}
 
 	public void deleteKeyword(int tagId) {
-		mKeyword.deleteKeyword(tagId);
+		ArrayList<TagVO> tags = getKeywords();
+		int size = tags.size();
+		int arrayIndex = 0;
+		
+		for(int i = 0; i < size; i++) {
+			if(tagId == tags.get(i).id) {
+				arrayIndex = i;
+				break;
+			}
+		}
+		mKeyword.deleteKeyword(arrayIndex);
 	}
 	
 	public void clearKeyword() {
