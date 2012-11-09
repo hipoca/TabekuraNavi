@@ -12,9 +12,11 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.Menu;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import jp.nfcgroup.tabekuranavi.model.StoreFinder;
+import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 import jp.nfcgroup.tabekuranavi.util.NfcUtil;
 import jp.nfcgroup.tabekuranavi.view.KeywordHodler;
 import jp.nfcgroup.tabekuranavi.view.KeywordHodler.KeywordChangedListener;
@@ -118,13 +120,21 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
     
     protected void onUpdateTags(String tagId){
         mStoreFinder.addKeyword(Integer.parseInt(tagId));
+        
+        ArrayList<TagVO> tags = mStoreFinder.getKeywords();
+        
+        mKeywordHolder.clearKeywords();//TODO モデルからTagVOが単体取得できたら修正する
+        for(TagVO tag : tags){
+            mKeywordHolder.addKeyword(tag);
+        }
     }
 
     abstract protected void onUpdateViews();
     
     
     public void onKeywordChangedListener(int id) {
-        // TODO 自動生成されたメソッド・スタブ
+        mStoreFinder.deleteKeyword(id);
         
+        onUpdateViews();
     }
 }

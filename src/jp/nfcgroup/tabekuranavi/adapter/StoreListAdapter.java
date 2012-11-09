@@ -61,8 +61,7 @@ public class StoreListAdapter extends SimpleExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
-            ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         
         if(convertView == null){
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -85,7 +84,6 @@ public class StoreListAdapter extends SimpleExpandableListAdapter {
             icon.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.ic_unexpanded));
         }
         
-        Log.d(TAG,"position="+groupPosition+" getGroupCount="+getGroupCount()+" isExpanded="+isExpanded);
         if(getGroupCount()-1 == groupPosition && isExpanded == false){
             convertView.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.bg_row_bottom));
         }else{

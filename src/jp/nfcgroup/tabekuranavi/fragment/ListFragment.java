@@ -25,7 +25,8 @@ public class ListFragment extends Fragment implements OnClickListener {
     @SuppressWarnings("unused")
     private static final String TAG = "ListFragment";
     
-    private ExpandableListView listView;
+    private ExpandableListView mListView;
+    private StoreFinder mStoreFinder;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,9 +37,16 @@ public class ListFragment extends Fragment implements OnClickListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        StoreFinder storeFinder = new StoreFinder(getActivity().getApplicationContext());
-        ArrayList<StoreVO> stores = storeFinder.getStores();
+        mStoreFinder = new StoreFinder(getActivity().getApplicationContext());
         
+        mListView = (ExpandableListView) getActivity().findViewById(R.id.listView);
+        mListView.setGroupIndicator(null);
+        mListView.setDividerHeight(0);
+        
+        updateViews();
+    }
+    
+    private void parseStores(ArrayList<StoreVO> stores){
         List<Map<String,Object>> parents = new ArrayList<Map<String,Object>>();
         List<List<Map<String,Object>>> children = new ArrayList<List<Map<String,Object>>>();
         
@@ -70,14 +78,14 @@ public class ListFragment extends Fragment implements OnClickListener {
                 new String[] {"name", "price"},
                 new int[] { android.R.id.text1, android.R.id.text2 });
         
-        listView = (ExpandableListView) getActivity().findViewById(R.id.listView);
-        listView.setAdapter(adapter);
-        listView.setGroupIndicator(null);
-        listView.setDividerHeight(0);
+        mListView.setAdapter(adapter);
     }
     
     public void updateViews(){
-        //TODO Modelデータ引き受け
+        
+        ArrayList<StoreVO> stores = mStoreFinder.getStores();
+        
+        parseStores(stores);
     }
 
     public void onClick(View v) {

@@ -58,6 +58,12 @@ public class KeywordHodler implements OnClickListener {
         }
     }
     
+    public void clearKeywords(){
+        //TODO モデルからTagVOが単体取得できたら消す
+        
+        mHolder.removeAllViews();
+    }
+    
     public interface KeywordChangedListener{
         void onKeywordChangedListener(int id);
     }
