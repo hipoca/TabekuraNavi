@@ -171,4 +171,18 @@ public class StoreFinder {
 	public ArrayList<TagVO> getKeywords() {
 		return mKeyword.getKeywords();
 	}
+	
+	public TagVO getKeyword(int tagId) {
+		ArrayList<TagVO> tags = getKeywords();
+		int size = tags.size();
+		int arrayIndex = 0;
+		
+		for(int i = 0; i < size; i++) {
+			if(tagId == tags.get(i).id) {
+				arrayIndex = i;
+				break;
+			}
+		}
+		return tags.get(arrayIndex);
+	}
 }
