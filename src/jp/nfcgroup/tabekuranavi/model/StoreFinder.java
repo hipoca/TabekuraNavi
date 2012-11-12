@@ -11,7 +11,8 @@ import android.util.Log;
 import android.util.SparseArray;
 
 public class StoreFinder {
-	private static final String TAG = StoreFinder.class.getSimpleName();
+    
+    private static final String TAG = StoreFinder.class.getSimpleName();
 	
 	private Context mContext;
 	private KeywordData mKeyword;
@@ -77,13 +78,22 @@ public class StoreFinder {
 		mKeyword.clearKeyword();
 	}
 	
-	public ArrayList<StoreVO> getStores() {
+	public ArrayList<StoreVO> getAndStores() {
+		return getStores(true);
+	}
+	
+	public ArrayList<StoreVO> getOrStores() {
+		return getStores(false);
+	}
+	
+	public ArrayList<StoreVO> getStores(boolean flag) {
 		int storeId = 0;
 		int sid = 0;
 		int dishId = 0;
 		int did = 0;
 		int storeWeight = 1;
 		int weightCounter = 1;
+		Cursor cursor;
 		
 		// タグIDを取得
 		ArrayList<TagVO> tags = mKeyword.getKeywords();
@@ -115,7 +125,11 @@ public class StoreFinder {
 		}
 		
 		// データベースから該当店舗を取得
-		Cursor cursor = mDatabase.findOrStores(tagIds);
+		if(flag) {
+			cursor = mDatabase.findAndStores(tagIds);
+		} else {
+			cursor = mDatabase.findOrStores(tagIds);
+		}
 		
 		// 店舗情報を作成
 		mStoresInfo.clear();
