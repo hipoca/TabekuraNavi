@@ -2,8 +2,6 @@ package jp.nfcgroup.tabekuranavi.model;
 
 import java.util.ArrayList;
 
-import android.util.Log;
-
 import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 
 public class KeywordData {

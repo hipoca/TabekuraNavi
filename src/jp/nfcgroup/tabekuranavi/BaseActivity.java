@@ -10,21 +10,19 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import jp.nfcgroup.tabekuranavi.model.StoreFinder;
-import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 import jp.nfcgroup.tabekuranavi.util.NfcUtil;
 import jp.nfcgroup.tabekuranavi.view.KeywordHodler;
 import jp.nfcgroup.tabekuranavi.view.KeywordHodler.KeywordChangedListener;
 
 public abstract class BaseActivity extends Activity implements KeywordChangedListener {
     
-    private static final String TAG = "BaseActivity";
+    @SuppressWarnings("unused")
+	private static final String TAG = "BaseActivity";
 	protected NfcAdapter mNfcAdapter;
     protected StoreFinder mStoreFinder;
     protected KeywordHodler mKeywordHolder;
@@ -124,7 +122,6 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
     	int id = Integer.parseInt(tagId);
         mStoreFinder.addKeyword(id);
         
-        ArrayList<TagVO> tags = mStoreFinder.getKeywords();
         mKeywordHolder.addKeyword(mStoreFinder.getKeyword(id));
     }
 

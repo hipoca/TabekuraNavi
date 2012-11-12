@@ -1,7 +1,6 @@
 package jp.nfcgroup.tabekuranavi.view;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,7 +12,8 @@ import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 
 public class KeywordHodler implements OnClickListener {
     
-    private static final String TAG = null;
+    @SuppressWarnings("unused")
+	private static final String TAG = null;
 	private Context mContext;
     private KeywordChangedListener mListener;
     private LinearLayout mHolder;
