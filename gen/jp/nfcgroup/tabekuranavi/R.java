@@ -113,13 +113,13 @@ public final class R {
         /** 
 	    <item name="android:windowBackground">@drawable/back</item>
 	    <item name="android:background">#ffffff</item>
- <item name="android:colorBackgroundCacheHint">@null</item>
- <item name="android:windowFrame">@null</item>
- <item name="android:windowContentOverlay">@null</item>
- <item name="android:windowIsFloating">true</item>
- <item name="android:backgroundDimEnabled">false</item>
- <item name="android:windowIsTranslucent">false</item>
- <item name="android:windowNoTitle">true</item>
+		<item name="android:colorBackgroundCacheHint">@null</item>
+		<item name="android:windowFrame">@null</item>
+		<item name="android:windowContentOverlay">@null</item>
+		<item name="android:windowIsFloating">true</item>
+		<item name="android:backgroundDimEnabled">false</item>
+		<item name="android:windowIsTranslucent">false</item>
+		<item name="android:windowNoTitle">true</item>
 	    
          */
         public static final int StoreListTheme=0x7f050001;
