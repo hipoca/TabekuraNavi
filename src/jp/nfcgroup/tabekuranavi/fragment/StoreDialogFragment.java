@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -65,7 +66,7 @@ public class StoreDialogFragment extends DialogFragment {
 		//int dialogHeight = (int)(metrics.heightPixels * 0.8);
 		lp.width = dialogWidth;
 		//lp.height = dialogHeight;
-		dialog.getWindow().setAttributes(lp);
+		//dialog.getWindow().setAttributes(lp);
 	}
 
 	@Override

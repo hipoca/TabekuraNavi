@@ -11,6 +11,7 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
+        public static final int back=0x7f020032;
         public static final int bg_child_row=0x7f020000;
         public static final int bg_child_row_bottom=0x7f020001;
         public static final int bg_child_row_top=0x7f020002;
@@ -109,6 +110,18 @@ public final class R {
     }
     public static final class style {
         public static final int AppTheme=0x7f050000;
+        /** 
+	    <item name="android:windowBackground">@drawable/back</item>
+	    <item name="android:background">#ffffff</item>
+ <item name="android:colorBackgroundCacheHint">@null</item>
+ <item name="android:windowFrame">@null</item>
+ <item name="android:windowContentOverlay">@null</item>
+ <item name="android:windowIsFloating">true</item>
+ <item name="android:backgroundDimEnabled">false</item>
+ <item name="android:windowIsTranslucent">false</item>
+ <item name="android:windowNoTitle">true</item>
+	    
+         */
         public static final int StoreListTheme=0x7f050001;
     }
 }
