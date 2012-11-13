@@ -11,7 +11,6 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int back=0x7f020033;
         public static final int bg_child_row=0x7f020000;
         public static final int bg_child_row_bottom=0x7f020001;
         public static final int bg_child_row_top=0x7f020002;
@@ -25,7 +24,7 @@ public final class R {
         public static final int button_delete_keyword=0x7f02000a;
         public static final int button_tolist=0x7f02000b;
         public static final int button_tomap=0x7f02000c;
-        public static final int dialog_drop_shadow=0x7f02000d;
+        public static final int dialog_dropshadow=0x7f02000d;
         public static final int dialog_title_bottom=0x7f02000e;
         public static final int dialog_title_top=0x7f02000f;
         public static final int header=0x7f020010;
