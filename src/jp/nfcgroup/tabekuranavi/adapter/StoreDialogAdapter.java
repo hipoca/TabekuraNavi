@@ -26,11 +26,14 @@ public class StoreDialogAdapter extends ArrayAdapter<DishVO> {
 		if(convertView == null) {
 			convertView = mInfalter.inflate(R.layout.dialog_row, null);
 		}
+		
 		TextView dishName = (TextView)convertView.findViewById(R.id.dialog_dish_name);
 		TextView priceValue = (TextView)convertView.findViewById(R.id.dialog_price_value);
 		
 		dishName.setText(mItems.get(position).name);
-		priceValue.setText(mItems.get(position).price+"rokka");
+		String rokka = String.valueOf(mItems.get(position).price) + " rokka";
+		priceValue.setText(rokka);
+		
 		return convertView;
 	}
 	
