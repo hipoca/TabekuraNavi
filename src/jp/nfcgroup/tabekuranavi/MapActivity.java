@@ -33,7 +33,7 @@ public class MapActivity extends BaseActivity implements OnClickListener{
         //MapGestureSurfaceView mapGestureSurfaceView = (MapGestureSurfaceView)this.findFragmentById(R.id.surfaceView1);
 
         Log.v("tag","MapGestureSurfaceView buttonSet");
-        _mapGesturefaceView=(MapGestureSurfaceView)this.findViewById(R.id.surfaceView1);        
+        _mapGesturefaceView=(MapGestureSurfaceView)this.findViewById(R.id.surfaceView);        
         //mapGesturefaceView.imgbutton.setOnClickListener(this);
 
        

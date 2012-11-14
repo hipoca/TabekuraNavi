@@ -27,7 +27,7 @@ import android.widget.ImageButton;
 @SuppressLint("DrawAllocation")
 public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.Callback{
 	private Bitmap _bmMap;
-	private Float _mapScale;
+	private Float  _mapScale;
 	private Matrix _matrix;
 	public  RectF[] shopButtonRects;
 	
@@ -88,8 +88,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
     		_matrix.mapRect(shopButtonRects[i]);
     		canvas.drawRect(shopButtonRects[i], paint);		
 		}
-    	
-    	
     }
 	
    

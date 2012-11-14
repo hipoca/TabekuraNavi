@@ -11,23 +11,19 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.Menu;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import jp.nfcgroup.tabekuranavi.model.StoreFinder;
-import jp.nfcgroup.tabekuranavi.model.vo.TagVO;
 import jp.nfcgroup.tabekuranavi.util.NfcUtil;
 import jp.nfcgroup.tabekuranavi.view.KeywordHodler;
 import jp.nfcgroup.tabekuranavi.view.KeywordHodler.KeywordChangedListener;
 
 public abstract class BaseActivity extends Activity implements KeywordChangedListener {
     
-    protected NfcAdapter mNfcAdapter;
+    @SuppressWarnings("unused")
+	private static final String TAG = "BaseActivity";
+	protected NfcAdapter mNfcAdapter;
     protected StoreFinder mStoreFinder;
     protected KeywordHodler mKeywordHolder;
     
@@ -36,7 +32,7 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
         super.onCreate(savedInstanceState);
         
         mStoreFinder = new StoreFinder(getApplicationContext());
-        mKeywordHolder = new KeywordHodler(getApplicationContext(),this);
+        //mKeywordHolder = new KeywordHodler(getApplicationContext(),this);
     }
     
     @Override
@@ -127,14 +123,18 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
     }
     
     protected void onUpdateTags(String tagId){
-        mStoreFinder.addKeyword(Integer.parseInt(tagId));
+    	int id = Integer.parseInt(tagId);
+        mStoreFinder.addKeyword(id);
+        
+        mKeywordHolder.addKeyword(mStoreFinder.getKeyword(id));
     }
 
     abstract protected void onUpdateViews();
     
     
     public void onKeywordChangedListener(int id) {
-        // TODO 自動生成されたメソッド・スタブ
+        mStoreFinder.deleteKeyword(id);
         
+        onUpdateViews();
     }
 }
