@@ -56,6 +56,7 @@ public class StoreDialogFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
 		/*
 		Dialog dialog = getDialog();
 		WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();

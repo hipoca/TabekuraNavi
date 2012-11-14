@@ -19,14 +19,5 @@ public class MapFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		Button dialogButton = (Button)getActivity().findViewById(R.id.button_dialog);
-		dialogButton.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				StoreDialogFragment sdialog = StoreDialogFragment.newInstance(14);
-				sdialog.show(getFragmentManager(), "dialog");
-			}
-		});
 	}
 }
