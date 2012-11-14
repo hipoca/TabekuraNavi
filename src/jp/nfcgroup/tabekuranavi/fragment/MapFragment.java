@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,18 +24,20 @@ import jp.nfcgroup.tabekuranavi.model.TestModel;
 import jp.nfcgroup.tabekuranavi.model.vo.DishVO;
 import jp.nfcgroup.tabekuranavi.model.vo.StoreVO;
 
-public class ListFragment extends Fragment implements OnClickListener {
-    
+public class MapFragment extends Fragment implements OnClickListener {
+   
+	//
     @SuppressWarnings("unused")
-    private static final String TAG = "ListFragment";
-    
-    private ExpandableListView listView;
+    private static final String TAG = "MapFragment";
+    //private ExpandableListView listView;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container);
+        return inflater.inflate(R.layout.fragment_map, container);
     }
     
+    
+    /*
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -72,19 +75,24 @@ public class ListFragment extends Fragment implements OnClickListener {
                 new String[] {"name", "price"},
                 new int[] { android.R.id.text1, android.R.id.text2 });
         
-        listView = (ExpandableListView) getActivity().findViewById(R.id.listView);
-        listView.setAdapter(adapter);
-        listView.setGroupIndicator(null);
-        listView.setDividerHeight(0);
+        //listView = (ExpandableListView) getActivity().findViewById(R.id.listView);
+        //listView.setAdapter(adapter);
+        //listView.setGroupIndicator(null);
+        //listView.setDividerHeight(0);
     }
+    */
+    
     
     public void updateViews(){
         //TODO Modelデータ引き受け
     }
-
+    
+    
     public void onClick(View v) {
+    	Log.v("tag","mapFragment.java");
         Intent intent = new Intent(getActivity().getApplicationContext(),MapActivity.class);
         getActivity().startActivity(intent);
     }
+   
     
 }

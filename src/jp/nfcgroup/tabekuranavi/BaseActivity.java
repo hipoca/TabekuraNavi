@@ -36,7 +36,6 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
         super.onCreate(savedInstanceState);
         
         mStoreFinder = new StoreFinder(getApplicationContext());
-        
         mKeywordHolder = new KeywordHodler(getApplicationContext(),this);
     }
     
@@ -49,6 +48,8 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
     protected void onResume() {
         super.onResume();
         
+        
+        /*
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (mNfcAdapter == null) {
@@ -79,6 +80,7 @@ public abstract class BaseActivity extends Activity implements KeywordChangedLis
             }
         };
         mNfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters, techLists);
+        */
     }
     
     @Override
