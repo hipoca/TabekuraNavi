@@ -1,16 +1,8 @@
 package jp.nfcgroup.tabekuranavi.view;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-
 import jp.nfcgroup.tabekuranavi.R;
 import jp.nfcgroup.tabekuranavi.fragment.StoreDialogFragment;
-import android.R.array;
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,19 +10,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
-//import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 
 @SuppressLint("DrawAllocation")
 public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.Callback{
@@ -44,7 +30,9 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
         getHolder().addCallback(this); 
 
         _bmMap  = LoadImageFile(R.drawable.map,800*2);
-    	
+        _mapScale = 1.0f;
+        
+        
         //店舗タッチ範囲を作成
         shopButtonRects = setShopButtonRect();
         
@@ -209,22 +197,29 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 
 		//Log.v("fImageScale","fImageScale" + fImageScale);
 		
-		Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
+		
 		
 		//ピンチを含めた総合ズーム率
 		//float	fScale = _fPinchScale * fImageScale;
-		float	fScale = _fPinchScale;
+		//float	fScale = _fPinchScale;
+		
+		
+		Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
+		
+		_mapScale += _fPinchScale - 1.0f;
 	
+		Log.v("_mapScale","_mapScale" + _mapScale);
+		
 		//余白を含めた移動量
 		float	fMoveX = _fPinchMoveX + fMarginX;
 		float	fMoveY = _fPinchMoveY + fMarginY;
 		
 		//ズーム原点指定
-		fMoveX += _ptPinchStart.x - _ptPinchStart.x * _fPinchScale;
-		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _fPinchScale;
+		fMoveX += _ptPinchStart.x - _ptPinchStart.x * _mapScale;
+		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
 
 		Matrix	matrix = new Matrix();
-		matrix.preScale(fScale,fScale);			//ズーム
+		matrix.preScale(_mapScale,_mapScale);			//ズーム
 		matrix.postTranslate(fMoveX,fMoveY);	//移動
 
 		//描画
@@ -241,8 +236,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
     		matrix.mapRect(tempRect);
     		canvas.drawRect(tempRect, paint);		
 		}
-    	
-    	Log.v("shopButtonRects[0]","shopButtonRects" + shopButtonRects[0]);
     }
 	
 	private void doDraw(SurfaceHolder holder){
@@ -332,7 +325,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 					_fPinchScale	= 1.0f;
 					_ptPinchStart.x	= 0.0f;
 					_ptPinchStart.y	= 0.0f;
-					doDraw(getHolder());
+					//doDraw(getHolder());
 				}
 			
 			 break;	
