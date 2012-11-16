@@ -10,7 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.FontMetrics;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -161,94 +164,77 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	}
 	
 	
+	private float _fMoveX = 0.0f;
+	private float _fMoveY = 0.0f;
 	
+	private float _fOriginX = 0.0f;
+	private float _fOriginY = 0.0f;
+
+
 	public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
 		if(_bmMap == null)
 			return;
 
-		//画面表示用ズーム率
-		float	fImageScale;
-
-		//余白
-		float	fMarginX = 0.0f;
-		float	fMarginY = 0.0f;
-		
-		/*
-		//ズーム率取得
-		{
-			int		nImageWidth	= _bmMap.getWidth();
-			int		nImageHeight= _bmMap.getHeight();
-			int		nViewWidth = getWidth();
-			int		nViewHeight = getHeight();
-			
-			//画像に合わせる
-			if((long)nImageWidth * nViewHeight > (long)nViewWidth * nImageHeight)
-			{
-				fImageScale = (float)nViewWidth / nImageWidth;
-				fMarginY = (nViewHeight - fImageScale * nImageHeight) * 0.5f;
-			}
-			else
-			{
-				fImageScale = (float)nViewHeight / nImageHeight;
-				fMarginX = (nViewWidth - fImageScale * nImageWidth) * 0.5f;
-			}
-		}
-		*/
-
-		//ピンチを含めた総合ズーム率
-		//float	fScale = _fPinchScale * fImageScale;
-		//float	fScale = _fPinchScale;
-		
-		//Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
+		Log.v("_fPinchScale","_fPinchScale:" + _fPinchScale);
 		_mapScale += _fPinchScale - 1.0f;
 		
+		_fMoveX = _fDragMoveX + _fOriginX;
+		_fMoveY = _fDragMoveY + _fOriginY;
 		
-		
-		//余白を含めた移動量
-		float fMoveX = _fPinchMoveX;
-		float fMoveY = _fPinchMoveY;
-		
-		
-		Log.v("_fPinchMoveX","_fPinchMoveX" + _fPinchMoveX);
 		//ズーム原点指定
-		fMoveX += _ptPinchStart.x - _ptPinchStart.x * _mapScale;
-		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
-		
-		
-		//Log.v("fMoveY","fMoveY" + fMoveY);
-		
+		_fMoveX += _ptPinchStart.x - _ptPinchStart.x * _mapScale;
+		_fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
+
+		Log.v("_fMoveX","after fMoveX:" + _fMoveX);
+			
 		//最小マップ
-		if(_mapScale < 1.0f){
+		if(_mapScale < 1.0f || _fPinchScale < 1.0f){
 			_mapScale = 1.0f;
-			fMoveX = 0.0f;
-			fMoveY = 0.0f;
+			_fMoveX = 0.0f;
+			_fMoveY = 0.0f;
 		}
-
 		
-		Log.v("fMoveX","fMoveX" + fMoveX);
+		Matrix	matrix = new Matrix();	
+		matrix.postScale(_mapScale,_mapScale);   //ズーム
+		matrix.postTranslate(_fMoveX,_fMoveY);	//移動
 		
-		Matrix	matrix = new Matrix();
-		matrix.preScale(_mapScale,_mapScale);   //ズーム
-		matrix.postTranslate(fMoveX,fMoveY);	//移動
-
 		//描画
 		canvas.drawColor(Color.BLACK);
 		canvas.drawBitmap(_bmMap, matrix, null);
-		
-
+		//canvas.drawBitmap(_bmMap, 0, 0, null);
 		
 		//店舗
+		//canvas.concat(matrix);
     	for (int i = 0; i < _shopDrawRects.length; i++) {
     		
     		Paint paint = new Paint();
     		paint.setColor(Color.GREEN);
     		
     		RectF tempRect = new RectF(_shopDrawRects[i]);
-    		_shopHitRects[i] = tempRect;
+    		
+    		/*
+    		Matrix	matrix_shop = new Matrix();	
+    		matrix_shop.setRotate(2.0f,tempRect.centerX(),tempRect.centerY()); //角度		
+    		matrix_shop.postScale(_mapScale,_mapScale);   //ズーム
+    		matrix_shop.postTranslate(_fMoveX,_fMoveY);	//移動
+    		*/
+    		
     		matrix.mapRect(tempRect);
+    		_shopHitRects[i] = tempRect;	
+    		
     		canvas.drawRect(tempRect, paint);
+    		
+    		Paint paint_text = new Paint();
+    		paint_text.setColor(Color.WHITE);
+    		paint_text.setAntiAlias(true);
+    		paint_text.setTextSize(22*_mapScale);
+    		paint_text.setTextAlign(Align.CENTER);
+    		
+    		canvas.drawText(String.valueOf(i+1), tempRect.centerX(), tempRect.centerY()+7, paint_text);
+    	
+    		
 		}
     }
 	
@@ -283,13 +269,18 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	private	float	_fPinchScale	= 1.0f;
 
 	private	PointF	_ptPinchStart	= new PointF();
-	private float	_fPinchStartDistance	= 0.0f;
-	//private float	_fPinchMoveDistance	= 0.0f;
+	private float	_fPinchStartDistance = 0.0f;
+	private float	_fPinchMoveDistance	 = 0.0f;
 	
 	private	float	_fPinchMoveX	= 0.0f;
 	private	float	_fPinchMoveY	= 0.0f;
 
-
+	//ドラッグ用変数
+	private	float	_fDragMoveX	= 0.0f;
+	private	float	_fDragMoveY	= 0.0f;
+	private	float	_ptDragStartX = 0.0f;
+	private	float	_ptDragStartY = 0.0f;
+	
 	
 	//タッチ操作内部処理用
 	private static final int TOUCH_NONE = 0;
@@ -316,13 +307,10 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		
 		if(_nTouchMode == TOUCH_ZOOM && _fPinchStartDistance > 50)
 	    {
-			//float distance = GetDistance(event);
-			//_fPinchMoveDistance = Math.abs(distance - _fPinchStartDistance);
-				
 			PointF	pt = new PointF();
 	   		GetCenterPoint(event,pt);
-	   		_fPinchMoveX	= pt.x - _ptPinchStart.x;
-	   		_fPinchMoveY	= pt.y - _ptPinchStart.y;
+	   		_fDragMoveX	= pt.x - _ptPinchStart.x;
+	   		_fDragMoveY	= pt.y - _ptPinchStart.y;
 	   		_fPinchScale    = GetDistance(event) / _fPinchStartDistance;	
 	   		doDraw(getHolder());
 			
@@ -334,7 +322,10 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		if(_nTouchMode == TOUCH_ZOOM)
 		{
 				//ピンチ終了処理
-				doDraw(getHolder());
+				//doDraw(getHolder());
+			
+				_fOriginX = _fMoveX;
+				_fOriginY = _fMoveY;	
 			
 				_nTouchMode = TOUCH_NONE;
 				_fPinchMoveX	= 0.0f;
@@ -361,12 +352,15 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		pt.y = (event.getY(0) + event.getY(1)) * 0.5f;
 	}
 	
+	
+	
 	//ドラッグ開始
 	public void startDrag(MotionEvent event)
 	{
 		if(_nTouchMode == TOUCH_NONE)
 		{
-			Log.v("drag","startdrag");
+			_ptDragStartX = event.getX();
+			_ptDragStartY = event.getY();	
 			_nTouchMode = TOUCH_DRAG;
 		}
 	}
@@ -376,7 +370,11 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	{
 		if(_nTouchMode == TOUCH_DRAG)
 		{	
-			Log.v("drag","movedrag");		
+			_fDragMoveX = event.getX() - _ptDragStartX;
+			_fDragMoveY = event.getY() - _ptDragStartY;
+			
+			doDraw(getHolder());
+			
 		}
 	}
 	
@@ -385,8 +383,14 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	{
 		if(_nTouchMode == TOUCH_DRAG)
 		{
+			_fOriginX = _fMoveX;
+			_fOriginY = _fMoveY;	
+			
 			//ドラッグ終了処理
-			Log.v("end","enddrag");
+			_fDragMoveX	= 0.0f;
+			_fDragMoveY	= 0.0f;
+			_ptDragStartX = 0.0f;
+			_ptDragStartY = 0.0f;
 			_nTouchMode = TOUCH_NONE;
 			
 		}

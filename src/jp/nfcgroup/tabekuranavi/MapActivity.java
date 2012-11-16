@@ -27,26 +27,25 @@ public class MapActivity extends BaseActivity implements OnClickListener{
         Button button = (Button)findViewById(R.id.button1);
         button.setOnClickListener(this);
         
-        _mapGesturefaceView=(MapGestureSurfaceView)this.findViewById(R.id.surfaceView);         
+        _mapGesturefaceView = (MapGestureSurfaceView)this.findViewById(R.id.surfaceView);         
     }
     
     
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		
 		if( event.getPointerCount() == 1){
+	
 			//ドラッグ
 			switch(event.getAction() & MotionEvent.ACTION_MASK)
 			{
 				case MotionEvent.ACTION_DOWN:
 					
+					//ダイアログ表示
 		    	    RectF[] hitRects = _mapGesturefaceView._shopHitRects;
 		    	    int paddingTop = 200;//TODO padding調整
 		    	    
 		    		for (int i = 0; i < hitRects.length; i++) {
 		    			if(hitRects[i].contains((int)event.getX(), (int)event.getY() - paddingTop) == true){
-		    				//ダイアログ表示
-		    				
 		    				StoreDialogFragment sdialog = StoreDialogFragment.newInstance(i);
 		    				sdialog.show(getFragmentManager(), "dialog");
 		    		
