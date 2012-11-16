@@ -1,7 +1,6 @@
 package jp.nfcgroup.tabekuranavi.view;
 
 import jp.nfcgroup.tabekuranavi.R;
-import jp.nfcgroup.tabekuranavi.fragment.StoreDialogFragment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,9 +10,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.Paint.FontMetrics;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,6 +27,12 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	public  RectF[] _shopHitRects;
 	public  RectF[] _shopDrawRects;
 	
+	private float _fMoveX = 0.0f;
+	private float _fMoveY = 0.0f;
+	
+	private float _fOriginX = 0.0f;
+	private float _fOriginY = 0.0f;
+
 	public MapGestureSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         getHolder().addCallback(this); 
@@ -41,10 +44,10 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
         _shopHitRects = setShopButtonRect();  //タッチ範囲（可変）
         _shopDrawRects = setShopButtonRect(); //描画範囲 （固定）
         
-        _matrix = new Matrix();
-    	_matrix.preScale(1.0f,1.0f);
-		_matrix.postTranslate(0,0); //中心座標
-	}
+        //_matrix = new Matrix();
+    	//_matrix.preScale(1.0f,1.0f);
+		//_matrix.postTranslate(0,0); //中心座標
+  	}
 	
 	//--------------------------------------------------------------//
 	//-- マップ画像の読み込み --
@@ -164,78 +167,75 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	}
 	
 	
-	private float _fMoveX = 0.0f;
-	private float _fMoveY = 0.0f;
-	
-	private float _fOriginX = 0.0f;
-	private float _fOriginY = 0.0f;
-
-
 	public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
+    	int		nViewWidth = getWidth();
+		int		nViewHeight = getHeight();
+		
 		if(_bmMap == null)
 			return;
 
-		Log.v("_fPinchScale","_fPinchScale:" + _fPinchScale);
 		_mapScale += _fPinchScale - 1.0f;
 		
-		_fMoveX = _fDragMoveX + _fOriginX;
-		_fMoveY = _fDragMoveY + _fOriginY;
+		_fMoveX = -nViewWidth  + _fDragMoveX + _fOriginX;
+		_fMoveY = -nViewHeight + _fDragMoveY + _fOriginY;
+		
+		Log.v("_fMoveX","_fMoveX" + _fMoveX);
 		
 		//ズーム原点指定
-		_fMoveX += _ptPinchStart.x - _ptPinchStart.x * _mapScale;
-		_fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
+		//_fMoveX += _ptPinchStart.x - _ptPinchStart.x * _mapScale;
+		//_fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
 
-		Log.v("_fMoveX","after fMoveX:" + _fMoveX);
 			
 		//最小マップ
-		if(_mapScale < 1.0f || _fPinchScale < 1.0f){
+		if(_mapScale < 1.0f){
 			_mapScale = 1.0f;
-			_fMoveX = 0.0f;
-			_fMoveY = 0.0f;
+			_fOriginX = 0.0f;
+			_fOriginY = 0.0f;
 		}
 		
-		Matrix	matrix = new Matrix();	
+		Matrix	matrix = new Matrix();
+		matrix.postTranslate(_fMoveX + nViewWidth/2, _fMoveY + nViewHeight/2);	//移動
 		matrix.postScale(_mapScale,_mapScale);   //ズーム
-		matrix.postTranslate(_fMoveX,_fMoveY);	//移動
+		matrix.postTranslate(-(_fMoveX + nViewWidth/2), -(_fMoveY + nViewHeight/2));	//移動
+		
 		
 		//描画
-		canvas.drawColor(Color.BLACK);
+		canvas.drawColor(Color.GRAY);
 		canvas.drawBitmap(_bmMap, matrix, null);
-		//canvas.drawBitmap(_bmMap, 0, 0, null);
 		
 		//店舗
-		//canvas.concat(matrix);
     	for (int i = 0; i < _shopDrawRects.length; i++) {
     		
+    		//店舗色
     		Paint paint = new Paint();
     		paint.setColor(Color.GREEN);
-    		
     		RectF tempRect = new RectF(_shopDrawRects[i]);
-    		
-    		/*
+
+    		/* TODO
     		Matrix	matrix_shop = new Matrix();	
-    		matrix_shop.setRotate(2.0f,tempRect.centerX(),tempRect.centerY()); //角度		
+    		matrix_shop.setRotate(40.0f,tempRect.centerX(),tempRect.centerY()); //角度		
     		matrix_shop.postScale(_mapScale,_mapScale);   //ズーム
     		matrix_shop.postTranslate(_fMoveX,_fMoveY);	//移動
     		*/
     		
+    		//ヒットエリア更新
     		matrix.mapRect(tempRect);
     		_shopHitRects[i] = tempRect;	
     		
+    		//店舗アイコン
     		canvas.drawRect(tempRect, paint);
     		
+    		//店舗番号
     		Paint paint_text = new Paint();
     		paint_text.setColor(Color.WHITE);
     		paint_text.setAntiAlias(true);
     		paint_text.setTextSize(22*_mapScale);
     		paint_text.setTextAlign(Align.CENTER);
     		
-    		canvas.drawText(String.valueOf(i+1), tempRect.centerX(), tempRect.centerY()+7, paint_text);
-    	
-    		
-		}
+    		canvas.drawText(String.valueOf(i+1), tempRect.centerX(), tempRect.centerY()+7*_mapScale, paint_text);
+    	}
     }
 	
 	private void doDraw(SurfaceHolder holder){
@@ -270,10 +270,10 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 
 	private	PointF	_ptPinchStart	= new PointF();
 	private float	_fPinchStartDistance = 0.0f;
-	private float	_fPinchMoveDistance	 = 0.0f;
+	//private float	_fPinchMoveDistance	 = 0.0f;
 	
-	private	float	_fPinchMoveX	= 0.0f;
-	private	float	_fPinchMoveY	= 0.0f;
+	//private	float	_fPinchMoveX	= 0.0f;
+	//private	float	_fPinchMoveY	= 0.0f;
 
 	//ドラッグ用変数
 	private	float	_fDragMoveX	= 0.0f;
@@ -309,7 +309,8 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	    {
 			PointF	pt = new PointF();
 	   		GetCenterPoint(event,pt);
-	   		_fDragMoveX	= pt.x - _ptPinchStart.x;
+
+	    	_fDragMoveX	= pt.x - _ptPinchStart.x;
 	   		_fDragMoveY	= pt.y - _ptPinchStart.y;
 	   		_fPinchScale    = GetDistance(event) / _fPinchStartDistance;	
 	   		doDraw(getHolder());
@@ -324,12 +325,12 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 				//ピンチ終了処理
 				//doDraw(getHolder());
 			
-				_fOriginX = _fMoveX;
-				_fOriginY = _fMoveY;	
+				//_fOriginX = _fMoveX;
+				//_fOriginY = _fMoveY;	
 			
 				_nTouchMode = TOUCH_NONE;
-				_fPinchMoveX	= 0.0f;
-				_fPinchMoveY	= 0.0f;
+				//_fPinchMoveX	= 0.0f;
+				//_fPinchMoveY	= 0.0f;
 				_fPinchScale	= 1.0f;
 				_ptPinchStart.x	= 0.0f;
 				_ptPinchStart.y	= 0.0f;
@@ -357,7 +358,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	//ドラッグ開始
 	public void startDrag(MotionEvent event)
 	{
-		if(_nTouchMode == TOUCH_NONE)
+		if(_nTouchMode == TOUCH_NONE && _mapScale > 1.0f)
 		{
 			_ptDragStartX = event.getX();
 			_ptDragStartY = event.getY();	
@@ -374,7 +375,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 			_fDragMoveY = event.getY() - _ptDragStartY;
 			
 			doDraw(getHolder());
-			
 		}
 	}
 	
@@ -383,8 +383,8 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	{
 		if(_nTouchMode == TOUCH_DRAG)
 		{
-			_fOriginX = _fMoveX;
-			_fOriginY = _fMoveY;	
+			_fOriginX += _fDragMoveX;
+			_fOriginY += _fDragMoveY;	
 			
 			//ドラッグ終了処理
 			_fDragMoveX	= 0.0f;
