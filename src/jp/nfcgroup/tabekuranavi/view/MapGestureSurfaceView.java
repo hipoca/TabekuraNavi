@@ -22,7 +22,7 @@ import android.view.SurfaceView;
 public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.Callback{
 	private Bitmap _bmMap;
 	private Float  _mapScale;
-	private Matrix _matrix;
+	//private Matrix _matrix;
 	
 	public  RectF[] _shopHitRects;
 	public  RectF[] _shopDrawRects;
@@ -202,7 +202,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		
 		
 		//描画
-		canvas.drawColor(Color.GRAY);
+		canvas.drawColor(Color.argb(255, 255, 235, 207));
 		canvas.drawBitmap(_bmMap, matrix, null);
 		
 		//店舗
