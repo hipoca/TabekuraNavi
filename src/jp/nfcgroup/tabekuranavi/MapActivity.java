@@ -37,6 +37,53 @@ public class MapActivity extends BaseActivity implements OnClickListener{
     }
     
     
+	public boolean onTouchEvent(MotionEvent event)
+	{
+		
+    	 
+        
+    	Log.v("touch","X" + (int)event.getX());
+    	Log.v("touch","Y" + (int)event.getY());
+    
+	    
+		switch(event.getAction() & MotionEvent.ACTION_MASK)
+		{
+			//タップ
+	      	case MotionEvent.ACTION_DOWN:
+	    	    RectF[] shopButtonRects = _mapGesturefaceView.shopButtonRects;
+	    	    int paddingTop = 200;//TODO padding調整
+	    	    
+	    		for (int i = 0; i < shopButtonRects.length; i++) {
+	    			if(shopButtonRects[i].contains((int)event.getX(), (int)event.getY() - paddingTop) == true){
+	    				Log.d("MyApp", "index" + i);
+	    				
+	    				StoreDialogFragment sdialog = StoreDialogFragment.newInstance(i);
+	    				sdialog.show(getFragmentManager(), "dialog");
+	    				
+	        			return true;
+	        		}
+				}
+	       	break;
+			
+			//ピンチ開始
+			case MotionEvent.ACTION_POINTER_DOWN:
+				_mapGesturefaceView.startPinch(event);
+			break;
+	
+			//ピンチ中
+			case MotionEvent.ACTION_MOVE:
+				_mapGesturefaceView.movePinch(event);
+			break;
+	
+			//ピンチ終了
+			case MotionEvent.ACTION_UP:
+			case MotionEvent.ACTION_POINTER_UP:
+				_mapGesturefaceView.endPinch(event);
+			 break;
+		 }
+		return true;
+	}
+    
     /*
     public boolean onTouchEvent(MotionEvent event) {
     

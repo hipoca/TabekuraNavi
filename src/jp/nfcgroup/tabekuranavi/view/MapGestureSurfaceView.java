@@ -195,19 +195,12 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		}
 		*/
 
-		//Log.v("fImageScale","fImageScale" + fImageScale);
-		
-		
-		
 		//ピンチを含めた総合ズーム率
 		//float	fScale = _fPinchScale * fImageScale;
 		//float	fScale = _fPinchScale;
 		
-		
 		Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
-		
 		_mapScale += _fPinchScale - 1.0f;
-	
 		Log.v("_mapScale","_mapScale" + _mapScale);
 		
 		//余白を含めた移動量
@@ -219,7 +212,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
 
 		Matrix	matrix = new Matrix();
-		matrix.preScale(_mapScale,_mapScale);			//ズーム
+		matrix.preScale(_mapScale,_mapScale);   //ズーム
 		matrix.postTranslate(fMoveX,fMoveY);	//移動
 
 		//描画
@@ -273,63 +266,82 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	private	float	_fPinchMoveX	= 0.0f;
 	private	float	_fPinchMoveY	= 0.0f;
 
+	
+	
+	
+	
 	//タッチ操作内部処理用
 	private static final int TOUCH_NONE = 0;
 	private static final int TOUCH_DRAG = 1;
 	private static final int TOUCH_ZOOM = 2;
 	private int		_nTouchMode	= TOUCH_NONE;
 	
+	
+	//ピンチ開始
+	public void startPinch(MotionEvent event){
+		if(event.getPointerCount() >= 2)
+		{
+			_fPinchStartDistance = GetDistance(event);
+			if(_fPinchStartDistance > 50f)
+			{
+				GetCenterPoint(event,_ptPinchStart);
+				_nTouchMode = TOUCH_ZOOM;
+			}
+		}
+	}
+	
+	//ピンチ中
+	public void movePinch(MotionEvent event){
+	    if(_nTouchMode == TOUCH_ZOOM && _fPinchStartDistance > 0)
+	    {
+	    	PointF	pt = new PointF();
+
+	    	GetCenterPoint(event,pt);
+	    	_fPinchMoveX	= pt.x - _ptPinchStart.x;
+	    	_fPinchMoveY	= pt.y - _ptPinchStart.y;
+	    	_fPinchScale = GetDistance(event) / _fPinchStartDistance;	
+	    	doDraw(getHolder());
+	    }
+	}
+	
+	//ピンチ終了
+	public void endPinch(MotionEvent event){
+		if(_nTouchMode == TOUCH_ZOOM)
+		{
+			//ピンチ終了処理
+			_nTouchMode = TOUCH_NONE;
+
+			_fPinchMoveX	= 0.0f;
+			_fPinchMoveY	= 0.0f;
+			_fPinchScale	= 1.0f;
+			_ptPinchStart.x	= 0.0f;
+			_ptPinchStart.y	= 0.0f;
+			//doDraw(getHolder());
+		}
+	}
+	
+	
+	/*
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		switch(event.getAction() & MotionEvent.ACTION_MASK)
 		{
 			//ピンチ開始
 			case MotionEvent.ACTION_POINTER_DOWN:
-				if(event.getPointerCount() >= 2)
-				{
-					_fPinchStartDistance = GetDistance(event);
-					if(_fPinchStartDistance > 50f)
-					{
-						GetCenterPoint(event,_ptPinchStart);
-						_nTouchMode = TOUCH_ZOOM;
-					}
-				}
+				startPinch(event);
 			break;
 	
 			//ピンチ中
 			case MotionEvent.ACTION_MOVE:
-			
-			    if(_nTouchMode == TOUCH_ZOOM && _fPinchStartDistance > 0)
-			    {
-			    	PointF	pt = new PointF();
-	
-			    	GetCenterPoint(event,pt);
-			    	_fPinchMoveX	= pt.x - _ptPinchStart.x;
-			    	_fPinchMoveY	= pt.y - _ptPinchStart.y;
-			    	_fPinchScale = GetDistance(event) / _fPinchStartDistance;	
-			    	doDraw(getHolder());
-			    }
+				movePinch(event);
 			break;
 	
 			//ピンチ終了
 			case MotionEvent.ACTION_UP:
 			case MotionEvent.ACTION_POINTER_UP:
-				
-				if(_nTouchMode == TOUCH_ZOOM)
-				{
-					//ピンチ終了処理
-					_nTouchMode = TOUCH_NONE;
-	
-					_fPinchMoveX	= 0.0f;
-					_fPinchMoveY	= 0.0f;
-					_fPinchScale	= 1.0f;
-					_ptPinchStart.x	= 0.0f;
-					_ptPinchStart.y	= 0.0f;
-					//doDraw(getHolder());
-				}
-			
+				endPinch(event);
 			 break;	
-			}
+		    }
 			
 			
 			
@@ -364,6 +376,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		return true;
 			
 	}
+	*/
 		
 	//ピンチ距離取得用
 	private	float	GetDistance(MotionEvent event)
