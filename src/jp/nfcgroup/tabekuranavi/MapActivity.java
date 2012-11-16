@@ -4,8 +4,6 @@ import jp.nfcgroup.tabekuranavi.fragment.StoreDialogFragment;
 import jp.nfcgroup.tabekuranavi.view.MapGestureSurfaceView;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 public class MapActivity extends BaseActivity implements OnClickListener{
    
@@ -26,8 +22,6 @@ public class MapActivity extends BaseActivity implements OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
     	
         super.onCreate(savedInstanceState);
-        //LinearLayout	layout = new LinearLayout(this);
-		//setContentView(layout);
         setContentView(R.layout.activity_map);
         
         Button button = (Button)findViewById(R.id.button1);
@@ -40,84 +34,64 @@ public class MapActivity extends BaseActivity implements OnClickListener{
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		
-    	 
-        
-    	Log.v("touch","X" + (int)event.getX());
-    	Log.v("touch","Y" + (int)event.getY());
-    
-	    
-		switch(event.getAction() & MotionEvent.ACTION_MASK)
-		{
-			//タップ
-	      	case MotionEvent.ACTION_DOWN:
-	    	    RectF[] shopButtonRects = _mapGesturefaceView.shopButtonRects;
-	    	    int paddingTop = 200;//TODO padding調整
-	    	    
-	    		for (int i = 0; i < shopButtonRects.length; i++) {
-	    			if(shopButtonRects[i].contains((int)event.getX(), (int)event.getY() - paddingTop) == true){
-	    				Log.d("MyApp", "index" + i);
-	    				
-	    				StoreDialogFragment sdialog = StoreDialogFragment.newInstance(i);
-	    				sdialog.show(getFragmentManager(), "dialog");
-	    				
-	        			return true;
-	        		}
-				}
-	       	break;
-			
-			//ピンチ開始
-			case MotionEvent.ACTION_POINTER_DOWN:
-				_mapGesturefaceView.startPinch(event);
-			break;
-	
-			//ピンチ中
-			case MotionEvent.ACTION_MOVE:
-				_mapGesturefaceView.movePinch(event);
-			break;
-	
-			//ピンチ終了
-			case MotionEvent.ACTION_UP:
-			case MotionEvent.ACTION_POINTER_UP:
-				_mapGesturefaceView.endPinch(event);
-			 break;
-		 }
-		return true;
+		if( event.getPointerCount() == 1){
+			//ドラッグ
+			switch(event.getAction() & MotionEvent.ACTION_MASK)
+			{
+				case MotionEvent.ACTION_DOWN:
+					
+		    	    RectF[] hitRects = _mapGesturefaceView._shopHitRects;
+		    	    int paddingTop = 200;//TODO padding調整
+		    	    
+		    		for (int i = 0; i < hitRects.length; i++) {
+		    			if(hitRects[i].contains((int)event.getX(), (int)event.getY() - paddingTop) == true){
+		    				//ダイアログ表示
+		    				
+		    				StoreDialogFragment sdialog = StoreDialogFragment.newInstance(i);
+		    				sdialog.show(getFragmentManager(), "dialog");
+		    		
+		    				return super.onTouchEvent(event);
+		        		}
+					}
+		    		
+		     		//ドラッグ開始
+	        		_mapGesturefaceView.startDrag(event);
+	       				
+					break;
+		
+				//ドラッグ中
+				case MotionEvent.ACTION_MOVE:
+					_mapGesturefaceView.moveDrag(event);
+					break;
+					
+				//ドラッグ終了
+				case	MotionEvent.ACTION_UP:
+					_mapGesturefaceView.endDrag(event);
+					break;
+			}
+		}else{
+		    //ピンチイン・アウト
+			switch(event.getAction() & MotionEvent.ACTION_MASK)
+			{
+				//ピンチ開始
+				case MotionEvent.ACTION_POINTER_DOWN:
+					_mapGesturefaceView.startPinch(event);
+					break;
+		
+				//ピンチ中
+				case MotionEvent.ACTION_MOVE:
+					_mapGesturefaceView.movePinch(event);
+					break;
+		
+				//ピンチ終了
+				case MotionEvent.ACTION_UP:
+				case MotionEvent.ACTION_POINTER_UP:
+					_mapGesturefaceView.endPinch(event);
+					break;
+			 }
+		}
+		return super.onTouchEvent(event);
 	}
-    
-    /*
-    public boolean onTouchEvent(MotionEvent event) {
-    
-    	RectF[] shopButtonRects = _mapGesturefaceView.shopButtonRects; 
-        
-    	Log.v("touch","X" + (int)event.getX());
-    	Log.v("touch","Y" + (int)event.getY());
-    	
-	    int iAction = event.getAction();
-	    
-	    //TODO padding調整
-	    int paddingTop = 200;  
-        switch(iAction){
-        	case MotionEvent.ACTION_DOWN:
-        		for (int i = 0; i < shopButtonRects.length; i++) {
-        			if(shopButtonRects[i].contains((int)event.getX(), (int)event.getY() - paddingTop) == true){
-        				Log.d("MyApp", "index" + i);
-        				
-        				StoreDialogFragment sdialog = StoreDialogFragment.newInstance(i);
-        				sdialog.show(getFragmentManager(), "dialog");
-        				
-            			return true;
-            		}
-				}
-	       	break;
-	     }
-        
-        return super.onTouchEvent(event);
-    }
-    */
-    
-    
-    
-    
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -125,8 +99,6 @@ public class MapActivity extends BaseActivity implements OnClickListener{
     }
 
    public void onClick(View v) {
-	   
-	   Log.v("tag","onClick");
 	   
        switch(v.getId()){
            case R.id.button1:

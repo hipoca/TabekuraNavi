@@ -23,7 +23,9 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	private Bitmap _bmMap;
 	private Float  _mapScale;
 	private Matrix _matrix;
-	public  RectF[] shopButtonRects;
+	
+	public  RectF[] _shopHitRects;
+	public  RectF[] _shopDrawRects;
 	
 	public MapGestureSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,9 +34,9 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
         _bmMap  = LoadImageFile(R.drawable.map,800*2);
         _mapScale = 1.0f;
         
-        
-        //店舗タッチ範囲を作成
-        shopButtonRects = setShopButtonRect();
+        //店舗
+        _shopHitRects = setShopButtonRect();  //タッチ範囲（可変）
+        _shopDrawRects = setShopButtonRect(); //描画範囲 （固定）
         
         _matrix = new Matrix();
     	_matrix.preScale(1.0f,1.0f);
@@ -199,18 +201,34 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		//float	fScale = _fPinchScale * fImageScale;
 		//float	fScale = _fPinchScale;
 		
-		Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
+		//Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
 		_mapScale += _fPinchScale - 1.0f;
-		Log.v("_mapScale","_mapScale" + _mapScale);
+		
+		
 		
 		//余白を含めた移動量
-		float	fMoveX = _fPinchMoveX + fMarginX;
-		float	fMoveY = _fPinchMoveY + fMarginY;
+		float fMoveX = _fPinchMoveX;
+		float fMoveY = _fPinchMoveY;
 		
+		
+		Log.v("_fPinchMoveX","_fPinchMoveX" + _fPinchMoveX);
 		//ズーム原点指定
 		fMoveX += _ptPinchStart.x - _ptPinchStart.x * _mapScale;
 		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _mapScale;
+		
+		
+		//Log.v("fMoveY","fMoveY" + fMoveY);
+		
+		//最小マップ
+		if(_mapScale < 1.0f){
+			_mapScale = 1.0f;
+			fMoveX = 0.0f;
+			fMoveY = 0.0f;
+		}
 
+		
+		Log.v("fMoveX","fMoveX" + fMoveX);
+		
 		Matrix	matrix = new Matrix();
 		matrix.preScale(_mapScale,_mapScale);   //ズーム
 		matrix.postTranslate(fMoveX,fMoveY);	//移動
@@ -219,15 +237,18 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		canvas.drawColor(Color.BLACK);
 		canvas.drawBitmap(_bmMap, matrix, null);
 		
+
+		
 		//店舗
-    	for (int i = 0; i < shopButtonRects.length; i++) {
+    	for (int i = 0; i < _shopDrawRects.length; i++) {
     		
     		Paint paint = new Paint();
     		paint.setColor(Color.GREEN);
     		
-    		RectF tempRect = new RectF(shopButtonRects[i]);
+    		RectF tempRect = new RectF(_shopDrawRects[i]);
+    		_shopHitRects[i] = tempRect;
     		matrix.mapRect(tempRect);
-    		canvas.drawRect(tempRect, paint);		
+    		canvas.drawRect(tempRect, paint);
 		}
     }
 	
@@ -263,12 +284,12 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 
 	private	PointF	_ptPinchStart	= new PointF();
 	private float	_fPinchStartDistance	= 0.0f;
+	//private float	_fPinchMoveDistance	= 0.0f;
+	
 	private	float	_fPinchMoveX	= 0.0f;
 	private	float	_fPinchMoveY	= 0.0f;
 
-	
-	
-	
+
 	
 	//タッチ操作内部処理用
 	private static final int TOUCH_NONE = 0;
@@ -292,15 +313,19 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	
 	//ピンチ中
 	public void movePinch(MotionEvent event){
-	    if(_nTouchMode == TOUCH_ZOOM && _fPinchStartDistance > 0)
+		
+		if(_nTouchMode == TOUCH_ZOOM && _fPinchStartDistance > 50)
 	    {
-	    	PointF	pt = new PointF();
-
-	    	GetCenterPoint(event,pt);
-	    	_fPinchMoveX	= pt.x - _ptPinchStart.x;
-	    	_fPinchMoveY	= pt.y - _ptPinchStart.y;
-	    	_fPinchScale = GetDistance(event) / _fPinchStartDistance;	
-	    	doDraw(getHolder());
+			//float distance = GetDistance(event);
+			//_fPinchMoveDistance = Math.abs(distance - _fPinchStartDistance);
+				
+			PointF	pt = new PointF();
+	   		GetCenterPoint(event,pt);
+	   		_fPinchMoveX	= pt.x - _ptPinchStart.x;
+	   		_fPinchMoveY	= pt.y - _ptPinchStart.y;
+	   		_fPinchScale    = GetDistance(event) / _fPinchStartDistance;	
+	   		doDraw(getHolder());
+			
 	    }
 	}
 	
@@ -308,75 +333,18 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	public void endPinch(MotionEvent event){
 		if(_nTouchMode == TOUCH_ZOOM)
 		{
-			//ピンチ終了処理
-			_nTouchMode = TOUCH_NONE;
-
-			_fPinchMoveX	= 0.0f;
-			_fPinchMoveY	= 0.0f;
-			_fPinchScale	= 1.0f;
-			_ptPinchStart.x	= 0.0f;
-			_ptPinchStart.y	= 0.0f;
-			//doDraw(getHolder());
-		}
-	}
-	
-	
-	/*
-	public boolean onTouchEvent(MotionEvent event)
-	{
-		switch(event.getAction() & MotionEvent.ACTION_MASK)
-		{
-			//ピンチ開始
-			case MotionEvent.ACTION_POINTER_DOWN:
-				startPinch(event);
-			break;
-	
-			//ピンチ中
-			case MotionEvent.ACTION_MOVE:
-				movePinch(event);
-			break;
-	
-			//ピンチ終了
-			case MotionEvent.ACTION_UP:
-			case MotionEvent.ACTION_POINTER_UP:
-				endPinch(event);
-			 break;	
-		    }
+				//ピンチ終了処理
+				doDraw(getHolder());
 			
-			
-			
-			
-			switch(event.getAction() & MotionEvent.ACTION_MASK)
-			{
-				//ドラッグ開始
-			case	MotionEvent.ACTION_DOWN:
-				if(_nTouchMode == TOUCH_NONE && event.getPointerCount() == 1)
-				{
-					_nTouchMode = TOUCH_DRAG;
-				}
-				break;
-	
-			case MotionEvent.ACTION_MOVE:
-				if(_nTouchMode == TOUCH_DRAG)
-				{
-				}
-				break;
-				
-				//ドラッグ終了
-			case	MotionEvent.ACTION_UP:
-				if(_nTouchMode == TOUCH_DRAG)
-				{
-					//ドラッグ終了処理
-					_nTouchMode = TOUCH_NONE;
-					break;
-				}
+				_nTouchMode = TOUCH_NONE;
+				_fPinchMoveX	= 0.0f;
+				_fPinchMoveY	= 0.0f;
+				_fPinchScale	= 1.0f;
+				_ptPinchStart.x	= 0.0f;
+				_ptPinchStart.y	= 0.0f;
 			}
-			
-	
-		return true;
-			
 	}
-	*/
+	
 		
 	//ピンチ距離取得用
 	private	float	GetDistance(MotionEvent event)
@@ -393,8 +361,34 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		pt.y = (event.getY(0) + event.getY(1)) * 0.5f;
 	}
 	
+	//ドラッグ開始
+	public void startDrag(MotionEvent event)
+	{
+		if(_nTouchMode == TOUCH_NONE)
+		{
+			Log.v("drag","startdrag");
+			_nTouchMode = TOUCH_DRAG;
+		}
+	}
 	
+	//ドラッグ中
+	public void moveDrag(MotionEvent event)
+	{
+		if(_nTouchMode == TOUCH_DRAG)
+		{	
+			Log.v("drag","movedrag");		
+		}
+	}
 	
-	
-
+	//ドラッグ終了
+	public void endDrag(MotionEvent event)
+	{
+		if(_nTouchMode == TOUCH_DRAG)
+		{
+			//ドラッグ終了処理
+			Log.v("end","enddrag");
+			_nTouchMode = TOUCH_NONE;
+			
+		}
+	}
 }
