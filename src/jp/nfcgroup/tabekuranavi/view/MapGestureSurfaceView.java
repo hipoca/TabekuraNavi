@@ -1,5 +1,11 @@
 package jp.nfcgroup.tabekuranavi.view;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
+
 import jp.nfcgroup.tabekuranavi.R;
 import jp.nfcgroup.tabekuranavi.fragment.StoreDialogFragment;
 import android.R.array;
@@ -14,7 +20,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.Rect;
 import android.graphics.RectF;
 //import android.graphics.Path;
@@ -60,7 +65,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		BitmapFactory.Options	options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeResource(getResources(), rsId, options);
-		
 		
 		int		nWidth = options.outWidth;
 		int		nHeight = options.outHeight;
@@ -162,32 +166,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		//////////////////
 		sBttonRects[28] = new RectF(485.0f, 335.0f, 525.0f, 375.0f);
 		
-		
-		
-		
-		//sBttonRects[1] = new RectF(485.0f, 595.0f, shopW + 485, shopH + 605);
-		
-		
-		/*
-		float rx = 0;
-		float ry = 0;
-		for (int i = 0; i < sBttonRects.length; i++) {
-			
-			if(i<9){
-				rx = 10.0f + 45.0f*i;
-			}
-			else if(i<19){
-				rx = 10.0f + 45.0f*(i-9);
-				ry = 45.0f;
-			}else{
-				rx = 10.0f + 45.0f*(i-19);
-				ry = 90.0f;
-			}
-			
-			sBttonRects[i] = new RectF(rx, ry, 40.0f+rx, 40.0f+ry);
-		}
-		*/
-		
+	
 		return sBttonRects;	
 	}
 	
@@ -196,7 +175,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
-     
 		if(_bmMap == null)
 			return;
 
@@ -207,6 +185,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		float	fMarginX = 0.0f;
 		float	fMarginY = 0.0f;
 		
+		/*
 		//ズーム率取得
 		{
 			int		nImageWidth	= _bmMap.getWidth();
@@ -214,9 +193,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 			int		nViewWidth = getWidth();
 			int		nViewHeight = getHeight();
 			
-			
-
-
 			//画像に合わせる
 			if((long)nImageWidth * nViewHeight > (long)nViewWidth * nImageHeight)
 			{
@@ -229,45 +205,44 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 				fMarginX = (nViewWidth - fImageScale * nImageWidth) * 0.5f;
 			}
 		}
+		*/
 
-
+		//Log.v("fImageScale","fImageScale" + fImageScale);
+		
+		Log.v("_fPinchScale","_fPinchScale" + _fPinchScale);
+		
 		//ピンチを含めた総合ズーム率
-		float	fScale = _fPinchScale * fImageScale;
-		
-		
-		
+		//float	fScale = _fPinchScale * fImageScale;
+		float	fScale = _fPinchScale;
+	
 		//余白を含めた移動量
 		float	fMoveX = _fPinchMoveX + fMarginX;
 		float	fMoveY = _fPinchMoveY + fMarginY;
-		
 		
 		//ズーム原点指定
 		fMoveX += _ptPinchStart.x - _ptPinchStart.x * _fPinchScale;
 		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _fPinchScale;
 
 		Matrix	matrix = new Matrix();
-
-		//ズーム
-		matrix.preScale(fScale,fScale);
-
-		//移動
-		matrix.postTranslate(fMoveX,fMoveY);
+		matrix.preScale(fScale,fScale);			//ズーム
+		matrix.postTranslate(fMoveX,fMoveY);	//移動
 
 		//描画
+		canvas.drawColor(Color.BLACK);
 		canvas.drawBitmap(_bmMap, matrix, null);
-		Log.v("nImageWidth","nImageWidth" + _bmMap.getWidth());
 		
-		
-		
-    	//店舗ビットマップ作成
+		//店舗
     	for (int i = 0; i < shopButtonRects.length; i++) {
     		
     		Paint paint = new Paint();
     		paint.setColor(Color.GREEN);
     		
-    		matrix.mapRect(shopButtonRects[i]);
-    		canvas.drawRect(shopButtonRects[i], paint);		
+    		RectF tempRect = new RectF(shopButtonRects[i]);
+    		matrix.mapRect(tempRect);
+    		canvas.drawRect(tempRect, paint);		
 		}
+    	
+    	Log.v("shopButtonRects[0]","shopButtonRects" + shopButtonRects[0]);
     }
 	
 	private void doDraw(SurfaceHolder holder){
@@ -275,98 +250,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		canvas.save();
 		onDraw(canvas);
 		holder.unlockCanvasAndPost(canvas);
-		
-		////////////
-		/*
-		Log.v("doDraw","doDraw");
-		
-		Canvas canvas = holder.lockCanvas();
-	
-		Matrix matrix = new Matrix();
-		matrix.preScale(1.0f,1.0f);
-		matrix.postTranslate(0,0); 
-		canvas.drawBitmap(_bmMap, matrix, null);
-    	canvas.restore();
-    	
-		holder.unlockCanvasAndPost(canvas);
-		*/
-		
-		
-		/*
-		//画面表示用ズーム率
-		float	fImageScale;
-
-		//余白
-		float	fMarginX = 0.0f;
-		float	fMarginY = 0.0f;
-		
-		//ズーム率取得
-		int		nbmMapWidth	= _bmMap.getWidth();
-		int		nbmMapHeight= _bmMap.getHeight();
-		int		nViewWidth = getWidth();
-		int		nViewHeight = getHeight();
-		
-		Log.v("_bmMap","_bmMapWidth" + nbmMapWidth);
-		Log.v("_bmMap","_bmMapHeight" + nbmMapHeight);
-
-		Log.v("viewMap","nViewWidth" + nViewWidth);
-		Log.v("viewMap","nViewHeight" + nViewHeight);
-
-		//画像に合わせる
-		if((long)nbmMapWidth * nViewHeight > (long)nViewWidth * nbmMapHeight)
-		{
-			fImageScale = (float)nViewWidth / nbmMapWidth;
-			fMarginY = (nViewHeight - fImageScale * nbmMapHeight) * 0.5f;
-		}
-		else
-		{
-			fImageScale = (float)nViewHeight / nbmMapHeight;
-			fMarginX = (nViewWidth - fImageScale * nbmMapWidth) * 0.5f;
-		}
-
-
-
-		//Log.v("fImageScale","fImageScale:" + fImageScale);
-		
-		
-		float	fScale = _fPinchScale * fImageScale;
-
-		//余白を含めた移動量
-		float	fMoveX = _fPinchMoveX + fMarginX;
-		float	fMoveY = _fPinchMoveY + fMarginY;
-		
-		
-		//ズーム原点指定
-		fMoveX += _ptPinchStart.x - _ptPinchStart.x * _fPinchScale;
-		fMoveY += _ptPinchStart.y - _ptPinchStart.y * _fPinchScale;
-		
-
-		Canvas canvas = holder.lockCanvas();
-		canvas.drawColor(Color.BLACK);
-		canvas.save();
-		
-		Log.v("fScale","fScale:" + fScale);
-		
-		Matrix matrix = new Matrix();
-		matrix.preScale(fScale,fScale);
-		matrix.postTranslate(fMoveX,fMoveY); 
-		
-		
-		canvas.drawBitmap(_bmMap, matrix, null);
-		
-    	//店舗ビットマップ作成
-    	for (int i = 0; i < shopButtonRects.length; i++) {
-    		
-    		Paint paint = new Paint();
-    		paint.setColor(Color.GREEN);
-    		
-    		matrix.mapRect(shopButtonRects[i]);
-    		canvas.drawRect(shopButtonRects[i], paint);		
-		}
-    	
-    	canvas.restore();
-		holder.unlockCanvasAndPost(canvas);
-		*/
 	}
 	  
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -403,7 +286,6 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 	private static final int TOUCH_ZOOM = 2;
 	private int		_nTouchMode	= TOUCH_NONE;
 	
-	/*
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		switch(event.getAction() & MotionEvent.ACTION_MASK)
@@ -489,15 +371,7 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		return true;
 			
 	}
-	
-	*/
 		
-
-	private FragmentManager getFragmentManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	//ピンチ距離取得用
 	private	float	GetDistance(MotionEvent event)
 	{
@@ -512,4 +386,9 @@ public class MapGestureSurfaceView extends SurfaceView implements SurfaceHolder.
 		pt.x = (event.getX(0) + event.getX(1)) * 0.5f;
 		pt.y = (event.getY(0) + event.getY(1)) * 0.5f;
 	}
+	
+	
+	
+	
+
 }

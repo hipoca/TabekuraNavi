@@ -37,7 +37,7 @@ public class MapActivity extends BaseActivity implements OnClickListener{
     }
     
     
-    
+    /*
     public boolean onTouchEvent(MotionEvent event) {
     
     	RectF[] shopButtonRects = _mapGesturefaceView.shopButtonRects; 
@@ -66,6 +66,7 @@ public class MapActivity extends BaseActivity implements OnClickListener{
         
         return super.onTouchEvent(event);
     }
+    */
     
     
     
